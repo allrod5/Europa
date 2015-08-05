@@ -1,0 +1,10 @@
+admin admin admin
+
+joao.gois joao.gois coordenador
+
+marcio.oikawa marcio.oikawa professor
+jesus.mena jesus.mena professor
+
+rodrigo.m rodrigo.m aluno
+felipe.anchieta felipe.anchieta aluno
+fabiano.barbosa fabiano.barbosa aluno

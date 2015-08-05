@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>userlist.txt</file>
+    </qresource>
+</RCC>
