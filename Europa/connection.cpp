@@ -50,7 +50,7 @@ bool Connection::getUserType(QString &usertype, QString &user, QString &password
 
 	while(!stream.atEnd()) {
 		stream >> u >> p >> t;
-		if(!QString::compare(user, u, Qt::CaseInsensitive) && !QString::compare(password, p, Qt::CaseSensitive)) {
+		if(QString::compare(user, u, Qt::CaseInsensitive)==0 && QString::compare(password, p, Qt::CaseSensitive)==0) {
 			usertype = t;
 			return true;
 		}

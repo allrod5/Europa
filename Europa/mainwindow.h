@@ -6,6 +6,10 @@
 #include <QWidget>
 #include <QTextEdit>
 #include <QListWidget>
+#include <QPixmap>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
 
 #include <iostream>
 
@@ -24,14 +28,16 @@ class MainWindow : public QMainWindow
 		~MainWindow();
 
 	public slots:
-		void establishConnection();
+		void login();
 		void sendQuery();
 		void requestEnrollment();
+		void logout();
 
 	private:
 		Ui::MainWindow *ui;
 		Connection connection;
 
+		void drawLogin();
 		void drawInterface();
 		void drawAdminControls();
 		void drawCoordenadorControls();

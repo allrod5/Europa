@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>userlist.txt</file>
+        <file>logo_alpha.png</file>
     </qresource>
 </RCC>

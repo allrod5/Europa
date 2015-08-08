@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	drawLogin();
 }
 
 MainWindow::~MainWindow()
@@ -13,30 +14,116 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::establishConnection()
+void MainWindow::drawLogin()
+{
+	qDeleteAll(ui->centralWidget->children());
+	delete ui->centralWidget->layout();
+
+	QVBoxLayout* layout = new QVBoxLayout;
+	layout->setObjectName("parentLayout");
+
+	//layout->addItem(new QSpacerItem(10,10,QSizePolicy::Minimum,QSizePolicy::Expanding));
+
+	QHBoxLayout* topLayout = new QHBoxLayout;
+	topLayout->setObjectName("topLayout");
+
+	topLayout->addItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
+
+	QPixmap *pic = new QPixmap;
+	pic->load(":/logo_alpha.png");
+	QLabel *logo = new QLabel;
+	logo->setPixmap(pic->scaledToWidth(pic->width()/2));
+	topLayout->addWidget(logo);
+
+	topLayout->addItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
+
+	layout->addLayout(topLayout);
+
+	//layout->addItem(new QSpacerItem(10,10,QSizePolicy::Minimum,QSizePolicy::Expanding));
+
+	QHBoxLayout *middleLayout = new QHBoxLayout;
+	middleLayout->setObjectName("middleLayout");
+
+	QGridLayout *fieldsLayout = new QGridLayout;
+	fieldsLayout->setObjectName("fieldsLayout");
+
+	QLabel* userLabel = new QLabel("Usuário:");
+	QFont font = userLabel->font();
+	font.setPointSize(18);
+	userLabel->setFont(font);
+	QLineEdit* userField = new QLineEdit;
+	userField->setObjectName("userField");
+	userField->setFont(font);
+	QLabel* passwordLabel = new QLabel("Senha:");
+	passwordLabel->setFont(font);
+	QLineEdit* passwordField = new QLineEdit;
+	passwordField->setEchoMode(QLineEdit::Password);
+	passwordField->setObjectName("passwordField");
+	passwordField->setFont(font);
+
+	fieldsLayout->addWidget(userLabel,0,0);
+	fieldsLayout->addWidget(userField,0,1);
+	fieldsLayout->addWidget(passwordLabel,1,0);
+	fieldsLayout->addWidget(passwordField,1,1);
+
+	middleLayout->addItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
+	middleLayout->addLayout(fieldsLayout);
+	middleLayout->addItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
+
+	layout->addLayout(middleLayout);
+
+	layout->addItem(new QSpacerItem(10,10,QSizePolicy::Minimum,QSizePolicy::Expanding));
+
+	QHBoxLayout *bottomLayout = new QHBoxLayout;
+	bottomLayout->setObjectName("bottomLayout");
+
+	QPushButton *connectButton = new QPushButton;
+	connect(connectButton, SIGNAL(clicked()), this, SLOT(login()));
+	connectButton->setText("Entrar");
+	connectButton->setFont(font);
+	connectButton->setObjectName("connectButton");
+	bottomLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
+	bottomLayout->addWidget(connectButton);
+	bottomLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding));
+
+	layout->addLayout(bottomLayout);
+
+	layout->addItem(new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+	ui->centralWidget->setLayout(layout);
+}
+
+void MainWindow::login()
 {
 	QPalette *palette = new QPalette();
 	palette->setColor(QPalette::Base,Qt::gray);
 	palette->setColor(QPalette::Text,Qt::darkGray);
 
-	ui->lineEdit->setReadOnly(true);
-	ui->lineEdit->setPalette(*palette);
+	ui->centralWidget->findChild<QLineEdit*>("userField")->setReadOnly(true);
+	ui->centralWidget->findChild<QLineEdit*>("userField")->setPalette(*palette);
 
-	ui->lineEdit_2->setReadOnly(true);
-	ui->lineEdit_2->setPalette(*palette);
+	ui->centralWidget->findChild<QLineEdit*>("passwordField")->setReadOnly(true);
+	ui->centralWidget->findChild<QLineEdit*>("passwordField")->setPalette(*palette);
 
-	QString user = ui->lineEdit->text();
-	QString password = ui->lineEdit->text();
+	QString user = ui->centralWidget->findChild<QLineEdit*>("userField")->text();
+	QString password = ui->centralWidget->findChild<QLineEdit*>("passwordField")->text();
 
 	if(connection.createConnection(user, password)) {
 		drawInterface();
 	} else {
-		ui->lineEdit->setReadOnly(false);
-		ui->lineEdit->setPalette( QApplication::palette( ui->lineEdit ) );
+		ui->centralWidget->findChild<QLineEdit*>("userField")->setReadOnly(false);
+		ui->centralWidget->findChild<QLineEdit*>("userField")
+				->setPalette( QApplication::palette( ui->centralWidget->findChild<QLineEdit*>("userField") ) );
 
-		ui->lineEdit_2->setReadOnly(false);
-		ui->lineEdit_2->setPalette( QApplication::palette( ui->lineEdit_2 ) );
+		ui->centralWidget->findChild<QLineEdit*>("passwordField")->setReadOnly(false);
+		ui->centralWidget->findChild<QLineEdit*>("passwordField")
+				->setPalette( QApplication::palette( ui->centralWidget->findChild<QLineEdit*>("passwordField") ) );
 	}
+}
+
+void MainWindow::logout()
+{
+	drawLogin();
 }
 
 void MainWindow::sendQuery()
@@ -99,9 +186,12 @@ void MainWindow::drawInterface()
 	bottomLayout->setObjectName("bottomLayout");
 
 	QPushButton *exitButton = new QPushButton;
-	connect(exitButton, SIGNAL(clicked()), this, SLOT(close()));
+	connect(exitButton, SIGNAL(clicked()), this, SLOT(logout()));
 	exitButton->setText("Sair");
 	exitButton->setObjectName("exitButton");
+	QFont font = exitButton->font();
+	font.setPointSize(18);
+	exitButton->setFont(font);
 	bottomLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Minimum));
 	bottomLayout->addWidget(exitButton);
 
