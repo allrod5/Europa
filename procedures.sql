@@ -419,6 +419,20 @@ delimiter ;
 
 
 
+delimiter @!!
+drop procedure if exists buscaTurma @!!
+create procedure buscaTurma(
+	in id int
+)
+begin
+	SELECT * FROM turma
+    WHERE turma.id = id;
+end @!!
+
+delimiter ;
+
+
+
 
 
 

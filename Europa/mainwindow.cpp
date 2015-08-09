@@ -193,6 +193,7 @@ void MainWindow::requestEnrollment()
 
 	query.exec(text);
 
+	drawInterface();
 }
 
 void MainWindow::drawInterface()
@@ -394,6 +395,34 @@ void MainWindow::drawAlunoControls()
 	QWidget *inicio = new QWidget();
 	QVBoxLayout *inicioLayout = new QVBoxLayout(inicio);
 
+	QListWidget* listWidget = new QListWidget;
+	listWidget->setObjectName("listaTurmasAluno");
+	QListWidgetItem* item;
+
+	query.exec("call turmasAluno("+RA+");");
+	while(query.next()) {
+		QString text;
+		QSqlQuery query2;
+		QSqlQuery query3;
+
+		query2.exec("call buscaTurma("+query.value(0).toString()+");");
+		query2.first();
+
+		query3.exec("call nomeCampus("+query2.value(2).toString()+")");
+		query3.first();
+		text = query2.value(1).toString()+"\t"+query2.value(3).toString()+"\t"+query3.value(0).toString()+"\t";
+
+		query3.exec("call nomeDisciplina('"+query2.value(5).toString()+"')");
+		query3.first();
+		text += query3.value(0).toString();
+
+		item = new QListWidgetItem(listWidget);
+		item->setFlags(item->flags() | Qt::ItemIsSelectable);
+
+		item->setText(text);
+		item->setData(Qt::UserRole, query2.value(0).toString());
+	}
+
 	QVector<int> turmasAluno;
 
 	query.exec("call turmasAluno("+RA+");");
@@ -401,13 +430,18 @@ void MainWindow::drawAlunoControls()
 		turmasAluno.append(query.value(0).toInt());
 	}
 
+	inicioLayout->addWidget(new QLabel("Suas requisições de matrícula:"));
+
+	inicioLayout->addWidget(listWidget);
+
+
+
 	tW->addTab(inicio,"Início");
 
 	QWidget* matricula = new QWidget;
 	QVBoxLayout* matriculaLayout = new QVBoxLayout(matricula);
-	QListWidget* listWidget = new QListWidget;
+	listWidget = new QListWidget;
 	listWidget->setObjectName("listWidget");
-	QListWidgetItem* item;
 	query.exec("call mostraTurma()");
 	while(query.next()) {
 		QString text;
