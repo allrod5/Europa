@@ -33,6 +33,7 @@ class MainWindow : public QMainWindow
 		void sendQuery();
 		void requestEnrollment();
 		void logout();
+		void recalculateRestrictions();
 
 	private:
 		Ui::MainWindow *ui;

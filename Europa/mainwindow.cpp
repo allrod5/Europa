@@ -34,7 +34,7 @@ void MainWindow::drawLogin()
 	QPixmap *pic = new QPixmap;
 	pic->load(":/logo_alpha.png");
 	QLabel *logo = new QLabel;
-	logo->setPixmap(pic->scaledToWidth(pic->width()/2));
+	logo->setPixmap(pic->scaledToWidth(pic->width()/2,Qt::SmoothTransformation));
 	topLayout->addWidget(logo);
 
 	topLayout->addItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
@@ -98,8 +98,8 @@ void MainWindow::drawLogin()
 void MainWindow::login()
 {
 	QPalette *palette = new QPalette();
-	palette->setColor(QPalette::Base,Qt::gray);
-	palette->setColor(QPalette::Text,Qt::darkGray);
+	palette->setColor(QPalette::Base,Qt::lightGray);
+	palette->setColor(QPalette::Text,Qt::gray);
 
 	ui->centralWidget->findChild<QLineEdit*>("userField")->setReadOnly(true);
 	ui->centralWidget->findChild<QLineEdit*>("userField")->setPalette(*palette);
@@ -194,6 +194,7 @@ void MainWindow::requestEnrollment()
 	query.exec(text);
 
 	drawInterface();
+
 }
 
 void MainWindow::drawInterface()
@@ -222,7 +223,7 @@ void MainWindow::drawInterface()
 	QPixmap *pic = new QPixmap;
 	pic->load(":/logo_alpha.png");
 	QLabel *logo = new QLabel;
-	logo->setPixmap(pic->scaled(120, 120, Qt::KeepAspectRatio));
+	logo->setPixmap(pic->scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
 	bottomLayout->addWidget(logo);
 	bottomLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Minimum));
@@ -368,18 +369,202 @@ void MainWindow::drawAdminControls()
 
 void MainWindow::drawCoordenadorControls()
 {
+	QSqlQuery query;
+
+	query.exec("call siapeUsuario('"+connection.user+"');");
+	query.first();
+	QString SIAPE = query.value(0).toString();
+
 	QTabWidget *tW = ui->centralWidget->findChild<QTabWidget*>("tabWidget");
-	tW->addTab(new QWidget(),"Início");
+
+
+
+
+	QWidget *inicio = new QWidget();
+	QVBoxLayout *inicioLayout = new QVBoxLayout(inicio);
+
+	QListWidget* listWidget = new QListWidget;
+	listWidget->setObjectName("listaTurmasProfessor");
+	QListWidgetItem* item;
+
+	query.exec("call turmasProfessor("+SIAPE+");");
+	while(query.next()) {
+		QString text;
+		QSqlQuery query2;
+		QSqlQuery query3;
+
+		query2.exec("call buscaTurma("+query.value(0).toString()+");");
+		query2.first();
+
+		query3.exec("call nomeCampus("+query2.value(2).toString()+")");
+		query3.first();
+		text = query2.value(1).toString()+"\t"+query2.value(3).toString()+"\t"+query3.value(0).toString()+"\t";
+
+		query3.exec("call nomeDisciplina('"+query2.value(5).toString()+"')");
+		query3.first();
+		text += query3.value(0).toString();
+
+		item = new QListWidgetItem(listWidget);
+		item->setFlags(item->flags() | Qt::ItemIsSelectable);
+
+		item->setText(text);
+		item->setData(Qt::UserRole, query2.value(0).toString());
+	}
+
+	inicioLayout->addWidget(new QLabel("Suas turma são:"));
+
+	inicioLayout->addWidget(listWidget);
+
+
+
+	tW->addTab(inicio,"Início");
+
 	tW->addTab(new QWidget(),"Consultas");
 	tW->addTab(new QWidget(),"Manutenção");
+
+	QWidget *perfil = new QWidget();
+	QVBoxLayout *perfilLayout = new QVBoxLayout(perfil);
+
+	query.exec("call buscaProfessor("+SIAPE+");");
+	query.first();
+	QLabel *label = new QLabel;
+
+	label->setText("SIAPE: "+query.value(0).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("Nome: "+query.value(1).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("RG: "+query.value(2).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("CPF: "+query.value(3).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	if(!QString::compare("M", query.value(4).toString()))
+		label->setText("Sexo: Masculino");
+	else
+		label->setText("Sexo: Feminino");
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("Email: "+query.value(7).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("Sala: "+query.value(9).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("Campus: "+query.value(10).toString());
+	perfilLayout->addWidget(label);
+
+	perfilLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+	tW->addTab(perfil,"Perfil");
 }
 
 void MainWindow::drawProfessorControls()
 {
+	QSqlQuery query;
+
+	query.exec("call siapeUsuario('"+connection.user+"');");
+	query.first();
+	QString SIAPE = query.value(0).toString();
+
 	QTabWidget *tW = ui->centralWidget->findChild<QTabWidget*>("tabWidget");
-	tW->addTab(new QWidget(),"Início");
-	tW->addTab(new QWidget(),"Turmas");
-	tW->addTab(new QWidget(),"Perfil");
+
+
+
+
+	QWidget *inicio = new QWidget();
+	QVBoxLayout *inicioLayout = new QVBoxLayout(inicio);
+
+	QListWidget* listWidget = new QListWidget;
+	listWidget->setObjectName("listaTurmasProfessor");
+	QListWidgetItem* item;
+
+	query.exec("call turmasProfessor("+SIAPE+");");
+	while(query.next()) {
+		QString text;
+		QSqlQuery query2;
+		QSqlQuery query3;
+
+		query2.exec("call buscaTurma("+query.value(0).toString()+");");
+		query2.first();
+
+		query3.exec("call nomeCampus("+query2.value(2).toString()+")");
+		query3.first();
+		text = query2.value(1).toString()+"\t"+query2.value(3).toString()+"\t"+query3.value(0).toString()+"\t";
+
+		query3.exec("call nomeDisciplina('"+query2.value(5).toString()+"')");
+		query3.first();
+		text += query3.value(0).toString();
+
+		item = new QListWidgetItem(listWidget);
+		item->setFlags(item->flags() | Qt::ItemIsSelectable);
+
+		item->setText(text);
+		item->setData(Qt::UserRole, query2.value(0).toString());
+	}
+
+	inicioLayout->addWidget(new QLabel("Suas turma são:"));
+
+	inicioLayout->addWidget(listWidget);
+
+
+
+	tW->addTab(inicio,"Início");
+
+
+	QWidget *perfil = new QWidget();
+	QVBoxLayout *perfilLayout = new QVBoxLayout(perfil);
+
+	query.exec("call buscaProfessor("+SIAPE+");");
+	query.first();
+	QLabel *label = new QLabel;
+
+	label->setText("SIAPE: "+query.value(0).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("Nome: "+query.value(1).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("RG: "+query.value(2).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("CPF: "+query.value(3).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	if(!QString::compare("M", query.value(4).toString()))
+		label->setText("Sexo: Masculino");
+	else
+		label->setText("Sexo: Feminino");
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("Email: "+query.value(7).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("Sala: "+query.value(9).toString());
+	perfilLayout->addWidget(label);
+
+	label = new QLabel;
+	label->setText("Campus: "+query.value(10).toString());
+	perfilLayout->addWidget(label);
+
+	perfilLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+	tW->addTab(perfil,"Perfil");
 }
 
 void MainWindow::drawAlunoControls()
@@ -430,6 +615,14 @@ void MainWindow::drawAlunoControls()
 		turmasAluno.append(query.value(0).toInt());
 	}
 
+	QVector<QString> disciplinasAluno;
+
+	for(int i=0; i<turmasAluno.size(); i++) {
+		query.exec("call buscaTurma("+QString::number(turmasAluno[i])+");");
+		query.first();
+		disciplinasAluno.append(query.value(5).toString());
+	}
+
 	inicioLayout->addWidget(new QLabel("Suas requisições de matrícula:"));
 
 	inicioLayout->addWidget(listWidget);
@@ -464,11 +657,20 @@ void MainWindow::drawAlunoControls()
 				break;
 			}
 		} if(i==turmasAluno.size()) {
+			for(int j=0; j<disciplinasAluno.size(); j++) {
+				if(QString::compare(disciplinasAluno[j],query.value(5).toString())==0) {
+					item->setFlags(item->flags() & Qt::ItemIsEnabled);
+					item->setBackgroundColor(Qt::lightGray);
+					break;
+				}
+			}
 			item->setCheckState(Qt::Unchecked);
 		}
 		item->setText(text);
 		item->setData(Qt::UserRole, query.value(0).toString());
+
 	}
+	connect(listWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(recalculateRestrictions()));
 
 	QPushButton* save = new QPushButton("Salvar");
 	save->setObjectName("saveButton");
@@ -543,7 +745,52 @@ void MainWindow::drawAlunoControls()
 	tW->addTab(perfil,"Perfil");
 }
 
+void MainWindow::recalculateRestrictions()
+{
+	QSqlQuery query;
 
+	query.exec("call raUsuario('"+connection.user+"');");
+	query.first();
+	QString RA = query.value(0).toString();
+
+	QListWidget *list = ui->centralWidget->findChild<QTabWidget*>("tabWidget")->findChild<QListWidget*>("listWidget");
+
+	QVector<int> turmasAluno;
+
+	for(unsigned int i=0; i<list->count(); i++ ) {
+		QListWidgetItem * item = list->item(i);
+		if(item->checkState()) {
+			turmasAluno.append(item->data(Qt::UserRole).toInt());
+		}
+	}
+
+	QVector<QString> disciplinasAluno;
+
+	for(int i=0; i<turmasAluno.size(); i++) {
+		query.exec("call buscaTurma("+QString::number(turmasAluno[i])+");");
+		query.first();
+		disciplinasAluno.append(query.value(5).toString());
+	}
+
+	for(unsigned int i=0; i<list->count(); i++ ) {
+		QListWidgetItem * item = list->item(i);
+
+		query.exec("call buscaTurma("+item->data(Qt::UserRole).toString()+");");
+		query.first();
+
+		int j;
+		for(j=0; j<disciplinasAluno.size(); j++) {
+			if(QString::compare(disciplinasAluno[j],query.value(5).toString())==0 && !item->checkState()) {
+				item->setFlags(item->flags() & Qt::ItemIsEnabled);
+				item->setBackgroundColor(Qt::lightGray);
+				break;
+			}
+		} if(j==disciplinasAluno.size()) {
+			item->setFlags(item->flags() | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
+			item->setBackgroundColor(Qt::transparent);
+		}
+	}
+}
 
 
 

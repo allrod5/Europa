@@ -338,7 +338,7 @@ create procedure raUsuario(
 )
 begin
 	SELECT ra FROM aluno
-    WHERE endereco_email LIKE CONCAT(usuario, '%');
+    WHERE endereco_email LIKE CONCAT(usuario, '@%');
 end @!!
 
 delimiter ;
@@ -430,6 +430,86 @@ begin
 end @!!
 
 delimiter ;
+
+
+
+delimiter @!!
+drop procedure if exists buscaTurma @!!
+create procedure buscaTurma(
+	in id int
+)
+begin
+	SELECT * FROM turma
+    WHERE turma.id = id;
+end @!!
+
+delimiter ;
+
+
+
+delimiter @!!
+drop procedure if exists siapeUsuario @!!
+create procedure siapeUsuario(
+	in usuario char(30)
+)
+begin
+	SELECT siape FROM professor
+    WHERE endereco_email LIKE CONCAT(usuario, '@%');
+end @!!
+
+delimiter ;
+
+
+
+delimiter @!!
+drop procedure if exists buscaProfessor @!!
+create procedure buscaProfessor(
+	in siape int
+)
+begin
+	SELECT * FROM professor
+    WHERE professor.siape=siape;
+end @!!
+
+delimiter ;
+
+
+
+delimiter @!!
+drop procedure if exists turmasProfessor @!!
+create procedure turmasProfessor(
+	in siape int
+)
+begin
+	SELECT id_turma FROM turma_professor
+    WHERE siape_professor = siape;
+     
+end @!!
+
+delimiter ;
+
+
+
+delimiter @!!
+drop procedure if exists alocarProfessor @!!
+create procedure alocarProfessor(
+	in siape int,
+    in turma int
+)
+begin
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    begin
+		-- ERROR
+		rollback;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Erro ao alocar professor. Operação revertida.';
+	end;
+	START TRANSACTION;
+		INSERT INTO turma_professor (siape_professor, id_turma) VALUES (siape, turma);
+    COMMIT;
+end @!!
+
+delimiter ;
+
 
 
 
