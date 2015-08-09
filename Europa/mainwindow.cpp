@@ -411,7 +411,7 @@ void MainWindow::drawCoordenadorControls()
 		item->setData(Qt::UserRole, query2.value(0).toString());
 	}
 
-	inicioLayout->addWidget(new QLabel("Suas turma são:"));
+	inicioLayout->addWidget(new QLabel("Suas turmas são:"));
 
 	inicioLayout->addWidget(listWidget);
 
@@ -420,14 +420,58 @@ void MainWindow::drawCoordenadorControls()
 	tW->addTab(inicio,"Início");
 
 	tW->addTab(new QWidget(),"Consultas");
-	tW->addTab(new QWidget(),"Manutenção");
+
+	QWidget *manutencao = new QWidget;
+	QHBoxLayout *manutencaoLayout = new QHBoxLayout(manutencao);
+
+	QListWidget *opcoes = new QListWidget;
+	opcoes->setObjectName("opcoesListWidget");
+	opcoes->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+	item = new QListWidgetItem(opcoes);
+	item->setText("Nova turma");
+	item->setData(Qt::UserRole, 0);
+
+	item = new QListWidgetItem(opcoes);
+	item->setText("Excluir turma");
+	item->setData(Qt::UserRole, 1);
+
+
+
+	manutencaoLayout->addWidget(opcoes);
+
+	QWidget *conf = new QWidget;
+
+	QVBoxLayout *confLayout = new QVBoxLayout(conf);
+
+	QHBoxLayout *majorConfLayout = new QHBoxLayout;
+
+	QVBoxLayout *leftConfLayout = new QVBoxLayout;
+
+	QLabel *label = new QLabel("Código da disciplina:");
+
+	leftConfLayout->addWidget(label);
+
+	QVBoxLayout *rightConfLayout = new QVBoxLayout;
+
+	QLineEdit *field = new QLineEdit;
+
+	rightConfLayout->addWidget(field);
+
+	majorConfLayout->addLayout(leftConfLayout);
+	majorConfLayout->addLayout(rightConfLayout);
+	confLayout->addLayout(majorConfLayout);
+
+	manutencaoLayout->addWidget(conf);
+
+	tW->addTab(manutencao,"Manutenção");
 
 	QWidget *perfil = new QWidget();
 	QVBoxLayout *perfilLayout = new QVBoxLayout(perfil);
 
 	query.exec("call buscaProfessor("+SIAPE+");");
 	query.first();
-	QLabel *label = new QLabel;
+	label = new QLabel;
 
 	label->setText("SIAPE: "+query.value(0).toString());
 	perfilLayout->addWidget(label);
@@ -512,7 +556,7 @@ void MainWindow::drawProfessorControls()
 		item->setData(Qt::UserRole, query2.value(0).toString());
 	}
 
-	inicioLayout->addWidget(new QLabel("Suas turma são:"));
+	inicioLayout->addWidget(new QLabel("Suas turmas são:"));
 
 	inicioLayout->addWidget(listWidget);
 
