@@ -19,6 +19,8 @@ void MainWindow::drawLogin()
 	qDeleteAll(ui->centralWidget->children());
 	delete ui->centralWidget->layout();
 
+	statusBar()->clearMessage();
+
 	QVBoxLayout* layout = new QVBoxLayout;
 	layout->setObjectName("parentLayout");
 
@@ -110,6 +112,7 @@ void MainWindow::login()
 
 	if(connection.createConnection(user, password)) {
 		drawInterface();
+		statusBar()->showMessage(user);
 	} else {
 		ui->centralWidget->findChild<QLineEdit*>("userField")->setReadOnly(false);
 		ui->centralWidget->findChild<QLineEdit*>("userField")
@@ -156,12 +159,34 @@ void MainWindow::requestEnrollment()
 	query.exec("call raUsuario('"+connection.user+"')");
 	query.first();
 	QString RA = query.value(0).toString();
+
+	QVector<int> turmasAluno;
+
+	query.exec("call turmasAluno("+RA+");");
+	while(query.next()) {
+		turmasAluno.append(query.value(0).toInt());
+	}
+
 	text = "start transaction; ";
 	QListWidget *list = ui->centralWidget->findChild<QTabWidget*>("tabWidget")->findChild<QListWidget*>("listWidget");
 	for(unsigned int i=0; i<list->count(); i++ ) {
 		QListWidgetItem * item = list->item(i);
 		if(item->checkState()) {
-			text += "call fazMatricula("+RA+","+item->data(Qt::UserRole).toString()+"); ";
+			int j;
+			for(j=0; j<turmasAluno.size(); j++) {
+				if(turmasAluno[j]==item->data(Qt::UserRole).toInt())
+					break;
+			} if(j==turmasAluno.size()) {
+				text += "call fazMatricula("+RA+","+item->data(Qt::UserRole).toString()+"); ";
+			}
+		} else {
+			int j;
+			for(j=0; j<turmasAluno.size(); j++) {
+				if(turmasAluno[j]==item->data(Qt::UserRole).toInt())
+					break;
+			} if(j<turmasAluno.size()) {
+				text += "call desfazMatricula("+RA+","+item->data(Qt::UserRole).toString()+"); ";
+			}
 		}
 	}
 	text += "commit;";
@@ -192,6 +217,13 @@ void MainWindow::drawInterface()
 	QFont font = exitButton->font();
 	font.setPointSize(18);
 	exitButton->setFont(font);
+
+	QPixmap *pic = new QPixmap;
+	pic->load(":/logo_alpha.png");
+	QLabel *logo = new QLabel;
+	logo->setPixmap(pic->scaled(120, 120, Qt::KeepAspectRatio));
+
+	bottomLayout->addWidget(logo);
 	bottomLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Minimum));
 	bottomLayout->addWidget(exitButton);
 
@@ -355,11 +387,19 @@ void MainWindow::drawAlunoControls()
 
 	query.exec("call raUsuario('"+connection.user+"');");
 	query.first();
+	QString RA = query.value(0).toString();
 
 	QTabWidget *tW = ui->centralWidget->findChild<QTabWidget*>("tabWidget");
 
 	QWidget *inicio = new QWidget();
 	QVBoxLayout *inicioLayout = new QVBoxLayout(inicio);
+
+	QVector<int> turmasAluno;
+
+	query.exec("call turmasAluno("+RA+");");
+	while(query.next()) {
+		turmasAluno.append(query.value(0).toInt());
+	}
 
 	tW->addTab(inicio,"Início");
 
@@ -383,7 +423,15 @@ void MainWindow::drawAlunoControls()
 
 		item = new QListWidgetItem(listWidget);
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-		item->setCheckState(Qt::Unchecked);
+		int i;
+		for(i=0; i<turmasAluno.size(); i++) {
+			if(turmasAluno[i]==query.value(0).toInt()) {
+				item->setCheckState(Qt::Checked);
+				break;
+			}
+		} if(i==turmasAluno.size()) {
+			item->setCheckState(Qt::Unchecked);
+		}
 		item->setText(text);
 		item->setData(Qt::UserRole, query.value(0).toString());
 	}
@@ -398,10 +446,6 @@ void MainWindow::drawAlunoControls()
 	tW->addTab(matricula,"Matrícula");
 
 
-
-	query.exec("call raUsuario('"+connection.user+"');");
-	query.first();
-	QString RA = query.value(0).toString();
 
 	QWidget *perfil = new QWidget();
 	QVBoxLayout *perfilLayout = new QVBoxLayout(perfil);

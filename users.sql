@@ -4,7 +4,6 @@ CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
 GRANT ALL PRIVILEGES ON matriculasrff.* TO 'admin'@'localhost' WITH GRANT OPTION;
 
 CREATE USER 'coordenador'@'localhost' IDENTIFIED BY 'coordenador';
-GRANT EXECUTE ON PROCEDURE checkUser TO 'coordenador'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraAluno TO 'coordenador'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraCampus TO 'coordenador'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraDisciplina TO 'coordenador'@'localhost';
@@ -27,9 +26,10 @@ GRANT EXECUTE ON PROCEDURE buscaAluno TO 'coordenador'@'localhost';
 GRANT EXECUTE ON PROCEDURE nomeDisciplina TO 'coordenador'@'localhost';
 GRANT EXECUTE ON PROCEDURE nomeCampus TO 'coordenador'@'localhost';
 GRANT EXECUTE ON PROCEDURE fazMatricula TO 'coordenador'@'localhost';
+GRANT EXECUTE ON PROCEDURE desfazMatricula TO 'coordenador'@'localhost';
+GRANT EXECUTE ON PROCEDURE turmasAluno TO 'coordenador'@'localhost';
 
 CREATE USER 'professor'@'localhost' IDENTIFIED BY 'professor';
-GRANT EXECUTE ON PROCEDURE checkUser TO 'professor'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraCampus TO 'professor'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraDisciplina TO 'professor'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraSala TO 'professor'@'localhost';
@@ -39,10 +39,8 @@ GRANT EXECUTE ON PROCEDURE mostraTurmaProfessor TO 'professor'@'localhost';
 GRANT EXECUTE ON PROCEDURE raUsuario TO 'professor'@'localhost';
 GRANT EXECUTE ON PROCEDURE nomeDisciplina TO 'professor'@'localhost';
 GRANT EXECUTE ON PROCEDURE nomeCampus TO 'professor'@'localhost';
-GRANT EXECUTE ON PROCEDURE fazMatricula TO 'professor'@'localhost';
 
 CREATE USER 'aluno'@'localhost' IDENTIFIED BY 'aluno';
-GRANT EXECUTE ON PROCEDURE checkUser TO 'aluno'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraCampus TO 'aluno'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraDisciplina TO 'aluno'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraSala TO 'aluno'@'localhost';
@@ -54,4 +52,6 @@ GRANT EXECUTE ON PROCEDURE buscaAluno TO 'aluno'@'localhost';
 GRANT EXECUTE ON PROCEDURE nomeDisciplina TO 'aluno'@'localhost';
 GRANT EXECUTE ON PROCEDURE nomeCampus TO 'aluno'@'localhost';
 GRANT EXECUTE ON PROCEDURE fazMatricula TO 'aluno'@'localhost';
+GRANT EXECUTE ON PROCEDURE desfazMatricula TO 'aluno'@'localhost';
+GRANT EXECUTE ON PROCEDURE turmasAluno TO 'aluno'@'localhost';
 

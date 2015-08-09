@@ -83,10 +83,10 @@ call nomeDisciplina('BC0001');
 select * from disciplina;
 
 
+call mostraQuadrimestre();
 
 
-
-
+call turmasAluno(11009713);
 
 
 

@@ -1,15 +1,6 @@
 USE matriculasrff;
 
 delimiter @!!
-drop procedure if exists checkUser @!!
-create procedure checkUser()
-begin
-	SELECT 'ok';
-end @!!
-
-delimiter ;
-
-delimiter @!!
 drop procedure if exists mostraAluno @!!
 create procedure mostraAluno()
 begin
@@ -314,6 +305,32 @@ end @!!
 
 delimiter ;
 
+
+
+delimiter @!!
+drop procedure if exists desfazMatricula @!!
+create procedure desfazMatricula(
+	in ra int,
+	in turma int
+)
+begin
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    begin
+		-- ERROR
+		rollback;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Erro ao desfazer a matrícula. Operação revertida.';
+	end;
+	START TRANSACTION;
+		DELETE FROM matricula
+        WHERE matricula.ra = ra
+			AND id_turma = turma;
+    COMMIT;
+end @!!
+
+delimiter ;
+
+
+
 delimiter @!!
 drop procedure if exists raUsuario @!!
 create procedure raUsuario(
@@ -384,6 +401,22 @@ begin
 end @!!
 
 delimiter ;
+
+
+
+delimiter @!!
+drop procedure if exists turmasAluno @!!
+create procedure turmasAluno(
+	in ra int
+)
+begin
+	SELECT id_turma FROM matricula
+    WHERE matricula.ra = ra;
+     
+end @!!
+
+delimiter ;
+
 
 
 
