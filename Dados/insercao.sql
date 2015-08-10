@@ -6,36 +6,43 @@ INSERT INTO endereco (rua, numero, bairro, cidade, estado, pais, cep)
 	VALUES ('R. Abolição', 1, 'Bangu', 'Santo André', 'SP', 'Brasil', 1);
 
 load data infile '/tmp/emails.csv'
-into table email
+ignore into table email
+CHARACTER SET UTF8
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n';
 
 load data infile '/tmp/aluno1.csv'
-into table aluno
+ignore into table aluno
+CHARACTER SET UTF8
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n';
 
 load data infile '/tmp/alunos2.csv'
-into table aluno
+ignore into table aluno
+CHARACTER SET UTF8
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n';
 
 load data infile '/tmp/alunos3.csv'
-into table aluno
+ignore into table aluno
+CHARACTER SET UTF8
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n';
 
 load data infile '/tmp/disciplinas.csv'
-into table disciplina
+ignore into table disciplina
+CHARACTER SET UTF8
 FIELDS TERMINATED BY ';'
 LINES TERMINATED BY '\n';
 
 load data infile '/tmp/docentes.csv'
-into table professor
+ignore into table professor
+CHARACTER SET UTF8
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n';
 
 load data infile '/tmp/turmas.csv'
-into table turma
+ignore into table turma
+CHARACTER SET UTF8
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n';

@@ -99,6 +99,7 @@ CREATE TABLE turma (
   KEY fk_turma_id_campus (id_campus),
   KEY fk_turma_disciplina (codigo_disciplina),
   KEY fk_turma_quadrimestre (quadrimestre),
+  UNIQUE (nome, id_campus, turno, codigo_disciplina, quadrimestre),
   CONSTRAINT fk_turma_id_campus FOREIGN KEY (id_campus) REFERENCES campus (id) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT fk_turma_disciplina FOREIGN KEY (codigo_disciplina) REFERENCES disciplina (codigo) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT fk_turma_quadrimestre FOREIGN KEY (quadrimestre) REFERENCES quadrimestre (id) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -153,6 +154,7 @@ CREATE TABLE turma_professor (
   id_turma int DEFAULT NULL,
   KEY fk_turma_professor_professor (siape_professor),
   KEY fk_turma_professor_turma (id_turma),
+  UNIQUE (siape_professor, id_turma),
   CONSTRAINT fk_turma_professor_professor FOREIGN KEY (siape_professor) REFERENCES professor (siape) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT fk_turma_professor_turma FOREIGN KEY (id_turma) REFERENCES turma (id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );

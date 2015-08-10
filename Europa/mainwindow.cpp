@@ -423,6 +423,7 @@ void MainWindow::drawCoordenadorControls()
 
 	QWidget *manutencao = new QWidget;
 	QHBoxLayout *manutencaoLayout = new QHBoxLayout(manutencao);
+	manutencaoLayout->setObjectName("manutencaoLayout");
 
 	QListWidget *opcoes = new QListWidget;
 	opcoes->setObjectName("opcoesListWidget");
@@ -436,33 +437,26 @@ void MainWindow::drawCoordenadorControls()
 	item->setText("Excluir turma");
 	item->setData(Qt::UserRole, 1);
 
+	item = new QListWidgetItem(opcoes);
+	item->setText("Alocar professor");
+	item->setData(Qt::UserRole, 2);
 
+	item = new QListWidgetItem(opcoes);
+	item->setText("Desalocar professor");
+	item->setData(Qt::UserRole, 3);
 
 	manutencaoLayout->addWidget(opcoes);
 
 	QWidget *conf = new QWidget;
+	conf->setObjectName("conf");
 
 	QVBoxLayout *confLayout = new QVBoxLayout(conf);
 
-	QHBoxLayout *majorConfLayout = new QHBoxLayout;
-
-	QVBoxLayout *leftConfLayout = new QVBoxLayout;
-
-	QLabel *label = new QLabel("Código da disciplina:");
-
-	leftConfLayout->addWidget(label);
-
-	QVBoxLayout *rightConfLayout = new QVBoxLayout;
-
-	QLineEdit *field = new QLineEdit;
-
-	rightConfLayout->addWidget(field);
-
-	majorConfLayout->addLayout(leftConfLayout);
-	majorConfLayout->addLayout(rightConfLayout);
-	confLayout->addLayout(majorConfLayout);
+	confLayout->addItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
 
 	manutencaoLayout->addWidget(conf);
+
+	connect(opcoes, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(drawSettings(QListWidgetItem*)));
 
 	tW->addTab(manutencao,"Manutenção");
 
@@ -471,7 +465,7 @@ void MainWindow::drawCoordenadorControls()
 
 	query.exec("call buscaProfessor("+SIAPE+");");
 	query.first();
-	label = new QLabel;
+	QLabel *label = new QLabel;
 
 	label->setText("SIAPE: "+query.value(0).toString());
 	perfilLayout->addWidget(label);
@@ -836,9 +830,281 @@ void MainWindow::recalculateRestrictions()
 	}
 }
 
+void MainWindow::drawSettings(QListWidgetItem *item)
+{
+
+	QHBoxLayout *manutencaoLayout = ui->centralWidget->findChild<QTabWidget*>("tabWidget")
+			->findChild<QHBoxLayout*>("manutencaoLayout");
+
+	QWidget *conf = ui->centralWidget->findChild<QTabWidget*>("tabWidget")->findChild<QWidget*>("conf");
+
+	qDeleteAll(conf->children());
+	delete conf->layout();
+
+	QVBoxLayout *confLayout = new QVBoxLayout(conf);
+	QHBoxLayout *majorConfLayout = new QHBoxLayout;
+	QVBoxLayout *leftConfLayout = new QVBoxLayout;
+	QVBoxLayout *rightConfLayout = new QVBoxLayout;
+	QHBoxLayout *bottomLayout = new QHBoxLayout;
+
+	QLabel *label;
+	QLineEdit *field;
+	QComboBox *comboBox;
+	QPushButton *button;
+
+	QSqlQuery query;
+
+	switch (item->data(Qt::UserRole).toInt()) {
+		case 0:
+			label = new QLabel("Disciplina:");
+			leftConfLayout->addWidget(label);
+
+			comboBox = new QComboBox;
+			comboBox->setObjectName("disciplina");
+			comboBox->setEditable(true);
+			comboBox->setAutoCompletion(true);
+
+			query.exec("call mostraDisciplina();");
+			while(query.next())
+				comboBox->addItem(query.value(1).toString(), query.value(0).toString());
+
+			rightConfLayout->addWidget(comboBox);
+
+			label = new QLabel("Campus:");
+			leftConfLayout->addWidget(label);
+
+			comboBox = new QComboBox;
+			comboBox->setObjectName("campus");
+			comboBox->setEditable(true);
+			comboBox->setAutoCompletion(true);
+
+			query.exec("call mostraCampus();");
+			while(query.next())
+				comboBox->addItem(query.value(1).toString(), query.value(0).toString());
+
+			rightConfLayout->addWidget(comboBox);
+
+			label = new QLabel("Turno:");
+			leftConfLayout->addWidget(label);
+
+			comboBox = new QComboBox;
+			comboBox->setObjectName("turno");
+			comboBox->setEditable(true);
+			comboBox->setAutoCompletion(true);
+
+			comboBox->addItem("diurno");
+			comboBox->addItem("noturno");
+
+			rightConfLayout->addWidget(comboBox);
+
+			label = new QLabel("Nome identificador da turma:");
+			leftConfLayout->addWidget(label);
+
+			field = new QLineEdit;
+			field->setObjectName("nome");
+			rightConfLayout->addWidget(field);
+
+			label = new QLabel("Vagas:");
+			leftConfLayout->addWidget(label);
+
+			field = new QLineEdit;
+			field->setObjectName("vagas");
+			field->setValidator(new QIntValidator(1, 500, this));
+			rightConfLayout->addWidget(field);
+
+			button = new QPushButton("Criar nova turma");
+			button->setObjectName("executar");
+			bottomLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
+			bottomLayout->addWidget(button);
+			bottomLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
+
+			connect(button, SIGNAL(clicked(bool)), this, SLOT(novaTurma()));
+
+			break;
+
+		case 1:
+
+
+			break;
+
+		case 2:
+			label = new QLabel("Disciplina:");
+			leftConfLayout->addWidget(label);
+
+			comboBox = new QComboBox;
+			comboBox->setObjectName("disciplina");
+			comboBox->setEditable(true);
+			comboBox->setAutoCompletion(true);
+
+			query.exec("call mostraDisciplina();");
+			while(query.next())
+				comboBox->addItem(query.value(1).toString(), query.value(0).toString());
+
+			rightConfLayout->addWidget(comboBox);
+
+			label = new QLabel("Campus:");
+			leftConfLayout->addWidget(label);
+
+			comboBox = new QComboBox;
+			comboBox->setObjectName("campus");
+			comboBox->setEditable(true);
+			comboBox->setAutoCompletion(true);
+
+			query.exec("call mostraCampus();");
+			while(query.next())
+				comboBox->addItem(query.value(1).toString(), query.value(0).toString());
+
+			rightConfLayout->addWidget(comboBox);
+
+			label = new QLabel("Turno:");
+			leftConfLayout->addWidget(label);
+
+			comboBox = new QComboBox;
+			comboBox->setObjectName("turno");
+			comboBox->setEditable(true);
+			comboBox->setAutoCompletion(true);
+
+			comboBox->addItem("diurno");
+			comboBox->addItem("noturno");
+
+			rightConfLayout->addWidget(comboBox);
+
+			label = new QLabel("Nome identificador da turma:");
+			leftConfLayout->addWidget(label);
+
+			field = new QLineEdit;
+			field->setObjectName("nome");
+			rightConfLayout->addWidget(field);
+
+			/*comboBox = new QComboBox;
+			comboBox->setObjectName("nome");
+			comboBox->setEditable(true);
+			comboBox->setAutoCompletion(true);
+
+			query.exec("call quadrimestreAtual();");
+			query.first();
+
+			query.exec("call mostraTurmasEspecificas("+
+					   rightConfLayout->findChild<QComboBox*>("campus")->currentData().toString()+","+
+					   "'"+rightConfLayout->findChild<QComboBox*>("turno")->currentText()+"',"+
+					   "'"+rightConfLayout->findChild<QComboBox*>("disciplina")->currentData().toString()+"',"+
+					   query.value(0).toString()+","+
+					   ");");
+			while(query.next())
+				comboBox->addItem(query.value(1).toString(), query.value(0).toString());
+
+			rightConfLayout->addWidget(comboBox);*/
+
+
+			label = new QLabel("Professor:");
+			leftConfLayout->addWidget(label);
+
+			comboBox = new QComboBox;
+			comboBox->setObjectName("professor");
+			comboBox->setEditable(true);
+			comboBox->setAutoCompletion(true);
+
+			query.exec("call mostraProfessor();");
+			while(query.next())
+				comboBox->addItem(query.value(1).toString(), query.value(0).toString());
+
+			rightConfLayout->addWidget(comboBox);
+
+			button = new QPushButton("Alocar professor");
+			button->setObjectName("executar");
+			bottomLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
+			bottomLayout->addWidget(button);
+			bottomLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
+
+			connect(button, SIGNAL(clicked(bool)), this, SLOT(alocarProfessor()));
+
+			break;
+
+		case 3:
+
+			break;
+
+		default:
+			break;
+	}
 
 
 
+
+
+	majorConfLayout->addLayout(leftConfLayout);
+	majorConfLayout->addLayout(rightConfLayout);
+	confLayout->addLayout(majorConfLayout);
+	confLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Minimum,QSizePolicy::Expanding));
+	confLayout->addLayout(bottomLayout);
+	confLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Minimum,QSizePolicy::Expanding));
+
+	manutencaoLayout->addWidget(conf);
+}
+
+void MainWindow::novaTurma()
+{
+	QWidget *conf = ui->centralWidget->findChild<QTabWidget*>("tabWidget")->findChild<QWidget*>("conf");
+	QSqlQuery query;
+	query.exec("call insereTurma('"+
+			   conf->findChild<QLineEdit*>("nome")->text()+"',"+
+			   conf->findChild<QComboBox*>("campus")->currentData().toString()+","+
+			   "'"+conf->findChild<QComboBox*>("turno")->currentText()+"',"+
+			   conf->findChild<QLineEdit*>("vagas")->text()+","+
+			   "'"+conf->findChild<QComboBox*>("disciplina")->currentData().toString()+"'"+
+			   ");");
+	if(query.lastError().isValid()) {
+		QMessageBox msgBox;
+		msgBox.setText("Erro ao tentar criar uma nova turma:\n"+query.lastError().text());
+		msgBox.exec();
+	} else {
+		QMessageBox msgBox;
+		msgBox.setText("Turma criada com sucesso.");
+		msgBox.exec();
+	}
+}
+
+void MainWindow::deletarTurma()
+{
+
+}
+
+void MainWindow::alocarProfessor()
+{
+	QWidget *conf = ui->centralWidget->findChild<QTabWidget*>("tabWidget")->findChild<QWidget*>("conf");
+	QSqlQuery query;
+
+	query.exec("call quadrimestreAtual();");
+	query.first();
+
+	query.exec("call idTurma('"+
+			   conf->findChild<QLineEdit*>("nome")->text()+"',"+
+			   conf->findChild<QComboBox*>("campus")->currentData().toString()+","+
+			   "'"+conf->findChild<QComboBox*>("turno")->currentText()+"',"+
+			   "'"+conf->findChild<QComboBox*>("disciplina")->currentData().toString()+"',"+
+			   query.value(0).toString()+
+			   ");");
+	query.first();
+
+	query.exec("call alocarProfessor("+
+			   conf->findChild<QComboBox*>("professor")->currentData().toString()+","+
+			   query.value(0).toString()+
+			   ");");
+	if(query.lastError().isValid()) {
+		QMessageBox msgBox;
+		msgBox.setText("Erro ao tentar alocar professor:\n"+query.lastError().text());
+		msgBox.exec();
+	} else {
+		QMessageBox msgBox;
+		msgBox.setText("Professor alocado com sucesso.");
+		msgBox.exec();
+	}
+}
+
+void MainWindow::desalocarProfessor()
+{
+
+}
 
 
 

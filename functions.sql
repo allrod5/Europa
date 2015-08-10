@@ -29,11 +29,11 @@ begin
 
 declare newId int;
 
-if (not exists (select id from campus)) then
+if (not exists (select id from turma)) then
     return 1;
 end if;
 
-select max(id) into newId from campus;
+select max(id) into newId from turma;
 
 set newId = newId + 1;
 

@@ -11,6 +11,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVector>
+#include <QComboBox>
 
 #include <iostream>
 
@@ -34,6 +35,11 @@ class MainWindow : public QMainWindow
 		void requestEnrollment();
 		void logout();
 		void recalculateRestrictions();
+		void drawSettings(QListWidgetItem*);
+		void novaTurma();
+		void deletarTurma();
+		void alocarProfessor();
+		void desalocarProfessor();
 
 	private:
 		Ui::MainWindow *ui;

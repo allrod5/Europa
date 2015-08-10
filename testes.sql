@@ -38,13 +38,15 @@ CALL insereAluno(
 
 CALL insereCampus('Santo André');
 
+DELETE FROM campus WHERE id = 3;
+
 CALL insereSala('S514-2', 'S', 2, 1);
 
 CALL insereDisciplina('BC0001', 'Base Experiemental das Ciências Naturais', 0, 4, 2, 4, 4, 'RECOMENDAÇÕES: NÃO HÁ. Experimentos...');
 
 CALL insereProfessor('Márcio Oikawa', '22.111.444-0', '888.000.111-00', 'M', 101, '11222-333', 'marcio.oikawa@ufabc.edu.br', '1980-1-30', 'S514-2', 1);
 
-CALL insereTurma('A1 - Matutino', 30, 'BC0001');
+CALL insereTurma('A15 - Matutino', 30, 'BC0001');
 
 create temporary table TMP(ra int,
   nome varchar(100),
@@ -80,6 +82,8 @@ set endereco_email = email;
 
 call nomeDisciplina('BC0001');
 
+call raUsuario('rodrigo.m');
+
 select * from disciplina;
 
 
@@ -88,7 +92,15 @@ call mostraQuadrimestre();
 
 call turmasAluno(11009713);
 
+call insereTurma('Z1',1,'diurno',30,'MC3310');
 
+INSERT INTO turma (id, nome, id_campus, turno, vagas, codigo_disciplina, quadrimestre) VALUES (genTurmaId(), 'K1', 1, 'noturno', 20, 'MC3310', curQuadrimestreId());
+
+call quadrimestreAtual();
+
+call idTurma('X11',1,'diurno','MC3310',1);
+
+call buscaTurma(897);
 
 
 

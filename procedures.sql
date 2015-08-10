@@ -264,7 +264,7 @@ delimiter @!!
 drop procedure if exists insereTurma @!!
 create procedure insereTurma(
 	in nome varchar(30),
-    in id_campus int,
+    in campus int,
     in turno varchar(7),
 	in vagas smallint,
 	in disciplina varchar(10)
@@ -277,7 +277,7 @@ begin
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Erro ao inserir turma. Operação revertida.';
 	end;
 	START TRANSACTION;
-		INSERT INTO turma (id, nome, vagas, codigo_disciplina, quadrimestre) VALUES (genTurmaId(), nome, vagas, disciplina, curQuadrimestreId());
+		INSERT INTO turma (id, nome, id_campus, turno, vagas, codigo_disciplina, quadrimestre) VALUES (genTurmaId(), nome, campus, turno, vagas, disciplina, curQuadrimestreId());
     COMMIT;
 end @!!
 
@@ -506,6 +506,38 @@ begin
 	START TRANSACTION;
 		INSERT INTO turma_professor (siape_professor, id_turma) VALUES (siape, turma);
     COMMIT;
+end @!!
+
+delimiter ;
+
+
+delimiter @!!
+drop procedure if exists quadrimestreAtual @!!
+create procedure quadrimestreAtual()
+begin
+	SELECT * FROM quadrimestre
+    WHERE quadrimestre.id = curQuadrimestreId();
+end @!!
+
+delimiter ;
+
+
+delimiter @!!
+drop procedure if exists idTurma @!!
+create procedure idTurma(
+	in nome varchar(30),
+    in campus int,
+    in turno varchar(7),
+    in disciplina varchar(10),
+    in quadrimestre int
+)
+begin
+	SELECT turma.id FROM turma
+    WHERE turma.nome=nome
+		AND turma.id_campus=campus
+        AND turma.turno=turno
+        AND turma.codigo_disciplina=disciplina
+        AND turma.quadrimestre=quadrimestre;
 end @!!
 
 delimiter ;
