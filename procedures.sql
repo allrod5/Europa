@@ -340,6 +340,20 @@ delimiter ;
 
 
 delimiter @!!
+drop procedure if exists salasTurmaId @!!
+create procedure salasTurmaId(
+	in id int
+)
+begin
+	SELECT * FROM sala_turma
+    WHERE sala_turma.id_turma=id;
+end @!!
+
+delimiter ;
+
+
+
+delimiter @!!
 drop procedure if exists fazMatricula @!!
 create procedure fazMatricula(
 	in ra int,

@@ -543,6 +543,10 @@ void MainWindow::drawProfessorControls()
 		query3.first();
 		text += query3.value(0).toString();
 
+		query3.exec("call contaMatriculas("+query2.value(0).toString()+");");
+		query3.first();
+		text += "\t"+query2.value(4).toString()+" vagas/ "+query3.value(0).toString()+" requisições de matrícula";
+
 		item = new QListWidgetItem(listWidget);
 		item->setFlags(item->flags() | Qt::ItemIsSelectable);
 
@@ -677,6 +681,7 @@ void MainWindow::drawAlunoControls()
 	while(query.next()) {
 		QString text;
 		QSqlQuery query2;
+		QSqlQuery query3;
 
 		query2.exec("call nomeCampus("+query.value(2).toString()+")");
 		query2.first();
@@ -687,7 +692,7 @@ void MainWindow::drawAlunoControls()
 		text += query2.value(0).toString();
 
 		query2.exec("call contaMatriculas("+query.value(0).toString()+");");
-		!query2.first();
+		query2.first();
 		text += "\t"+query.value(4).toString()+" vagas/ "+query2.value(0).toString()+" requisições de matrícula";
 
 		item = new QListWidgetItem(listWidget);
@@ -699,12 +704,32 @@ void MainWindow::drawAlunoControls()
 				break;
 			}
 		} if(i==turmasAluno.size()) {
+			bool flag = false;
 			for(int j=0; j<disciplinasAluno.size(); j++) {
 				if(QString::compare(disciplinasAluno[j],query.value(5).toString())==0) {
 					item->setFlags(item->flags() & Qt::ItemIsEnabled);
 					item->setBackgroundColor(Qt::lightGray);
 					break;
-				}
+				} /*else {
+					query2.exec("call salasTurmaId("+item->data(Qt::UserRole).toString()+");");
+					while(query2.next()) {
+						query3.exec("call salasTurmaId("+QString::number(turmasAluno[j])+");");
+						while(query3.next()) {
+							if(!item->checkState()
+									&& query3.value(1).toInt()==query2.value(1).toInt()
+									&& QString::compare(query3.value(3).toString(),query2.value(3).toString())==0
+									&& query3.value(4).toInt()<query2.value(5).toInt()
+									&& query3.value(5).toInt()>query2.value(4).toInt()) {
+								item->setFlags(item->flags() & Qt::ItemIsEnabled);
+								item->setBackgroundColor(Qt::lightGray);
+								flag = true;
+								break;
+							}
+						}
+						if(flag) break;
+					}
+					if(flag) break;
+				}*/
 			}
 			item->setCheckState(Qt::Unchecked);
 		}
@@ -790,6 +815,7 @@ void MainWindow::drawAlunoControls()
 void MainWindow::recalculateRestrictions()
 {
 	QSqlQuery query;
+	QSqlQuery query2;
 
 	query.exec("call raUsuario('"+connection.user+"');");
 	query.first();
@@ -821,12 +847,34 @@ void MainWindow::recalculateRestrictions()
 		query.first();
 
 		int j;
+		bool flag = false;
 		for(j=0; j<disciplinasAluno.size(); j++) {
 			if(QString::compare(disciplinasAluno[j],query.value(5).toString())==0 && !item->checkState()) {
 				item->setFlags(item->flags() & Qt::ItemIsEnabled);
 				item->setBackgroundColor(Qt::lightGray);
 				break;
+			} else {
+				query2.exec("call salasTurmaId("+item->data(Qt::UserRole).toString()+");");
+				while(query2.next()) {
+					query.exec("call salasTurmaId("+QString::number(turmasAluno[j])+");");
+					while(query.next()) {
+						if(!item->checkState()
+								&& query.value(1).toInt()==query2.value(1).toInt()
+								&& QString::compare(query.value(3).toString(),query2.value(3).toString())==0
+								&& query.value(4).toInt()<query2.value(5).toInt()
+								&& query.value(5).toInt()>query2.value(4).toInt()) {
+							item->setFlags(item->flags() & Qt::ItemIsEnabled);
+							item->setBackgroundColor(Qt::lightGray);
+							flag = true;
+							break;
+						}
+					}
+					if(flag) break;
+				}
+				if(flag) break;
 			}
+
+
 		} if(j==disciplinasAluno.size()) {
 			item->setFlags(item->flags() | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
 			item->setBackgroundColor(Qt::transparent);
