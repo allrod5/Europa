@@ -40,6 +40,7 @@ class MainWindow : public QMainWindow
 		void deletarTurma();
 		void alocarProfessor();
 		void desalocarProfessor();
+		void drawPlus();
 
 	private:
 		Ui::MainWindow *ui;

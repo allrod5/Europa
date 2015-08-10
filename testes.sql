@@ -102,7 +102,7 @@ call idTurma('X11',1,'diurno','MC3310',1);
 
 call buscaTurma(897);
 
+call mostraTurmasEspecificas(1,'diurno','BC0001',1);
 
-
-
+call contaMatriculas(400);
 

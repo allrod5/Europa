@@ -286,6 +286,60 @@ delimiter ;
 
 
 delimiter @!!
+drop procedure if exists insereHorarioTurma @!!
+create procedure insereHorarioTurma(
+	in id int,
+    in dia varchar(7),
+    in inicio smallint,
+	in fim smallint
+)
+begin
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    begin
+		-- ERROR
+		rollback;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Erro ao inserir horário da turma. Operação revertida.';
+	end;
+	START TRANSACTION;
+		INSERT INTO sala_turma (id_campus, id_turma, dia, hora_inicio, hora_fim, quadrimestre) VALUES (campusTurma(id), id, dia, inicio, fim, curQuadrimestreId());
+    COMMIT;
+end @!!
+
+delimiter ;
+
+
+
+delimiter @!!
+drop procedure if exists insereSalaTurma @!!
+create procedure insereSalaTurma(
+	in id int,
+    in dia varchar(7),
+    in inicio smallint,
+	in fim smallint,
+    in codigo varchar(10)
+)
+begin
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    begin
+		-- ERROR
+		rollback;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Erro ao inserir sala da turma. Operação revertida.';
+	end;
+	START TRANSACTION;
+		UPDATE sala_turma SET codigo_sala=codigo
+        WHERE sala_turma.id_campus=campusTurma(id)
+			AND sala_turma.id_turma=id
+            AND sala_turma.dia=dia
+            AND sala_turma.hora_inicio=inicio
+            AND sala_turma.hora_fim=fim;
+    COMMIT;
+end @!!
+
+delimiter ;
+
+
+
+delimiter @!!
 drop procedure if exists fazMatricula @!!
 create procedure fazMatricula(
 	in ra int,
@@ -538,6 +592,40 @@ begin
         AND turma.turno=turno
         AND turma.codigo_disciplina=disciplina
         AND turma.quadrimestre=quadrimestre;
+end @!!
+
+delimiter ;
+
+
+
+delimiter @!!
+drop procedure if exists mostraTurmasEspecificas @!!
+create procedure mostraTurmasEspecificas(
+    in campus int,
+    in turno varchar(7),
+    in disciplina varchar(10),
+    in quadrimestre int
+)
+begin
+	SELECT * FROM turma
+    WHERE turma.id_campus=campus
+        AND turma.turno=turno
+        AND turma.codigo_disciplina=disciplina
+        AND turma.quadrimestre=quadrimestre;
+end @!!
+
+delimiter ;
+
+
+
+delimiter @!!
+drop procedure if exists contaMatriculas @!!
+create procedure contaMatriculas(
+    in turma int
+)
+begin
+	SELECT count(*) FROM matricula
+    WHERE id_turma=turma;
 end @!!
 
 delimiter ;

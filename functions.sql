@@ -105,4 +105,29 @@ end @!!
 delimiter ;
 
 
+delimiter @!!
+drop function if exists campusTurma @!!
+create function campusTurma(id int) returns int
+
+begin 
+
+declare campusId int;
+
+select id_campus into campusId from turma
+where turma.id=id;
+
+return campusId;
+
+end @!!
+delimiter ;
+
+
+
+
+
+
+
+
+
+
 

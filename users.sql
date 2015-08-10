@@ -36,6 +36,9 @@ GRANT EXECUTE ON PROCEDURE alocarProfessor TO 'coordenador'@'localhost';
 GRANT EXECUTE ON PROCEDURE quadrimestreAtual TO 'coordenador'@'localhost';
 GRANT EXECUTE ON PROCEDURE idTurma TO 'coordenador'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraTurmasEspecificas TO 'coordenador'@'localhost';
+GRANT EXECUTE ON PROCEDURE contaMatriculas TO 'coordenador'@'localhost';
+GRANT EXECUTE ON PROCEDURE insereHorarioTurma TO 'coordenador'@'localhost';
+GRANT EXECUTE ON PROCEDURE insereSalaTurma TO 'coordenador'@'localhost';
 
 CREATE USER 'professor'@'localhost' IDENTIFIED BY 'professor';
 GRANT EXECUTE ON PROCEDURE mostraCampus TO 'professor'@'localhost';
@@ -54,6 +57,7 @@ GRANT EXECUTE ON PROCEDURE turmasProfessor TO 'professor'@'localhost';
 GRANT EXECUTE ON PROCEDURE quadrimestreAtual TO 'professor'@'localhost';
 GRANT EXECUTE ON PROCEDURE idTurma TO 'professor'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraTurmasEspecificas TO 'professor'@'localhost';
+GRANT EXECUTE ON PROCEDURE contaMatriculas TO 'professor'@'localhost';
 
 CREATE USER 'aluno'@'localhost' IDENTIFIED BY 'aluno';
 GRANT EXECUTE ON PROCEDURE mostraCampus TO 'aluno'@'localhost';
@@ -73,4 +77,5 @@ GRANT EXECUTE ON PROCEDURE buscaTurma TO 'aluno'@'localhost';
 GRANT EXECUTE ON PROCEDURE quadrimestreAtual TO 'aluno'@'localhost';
 GRANT EXECUTE ON PROCEDURE idTurma TO 'aluno'@'localhost';
 GRANT EXECUTE ON PROCEDURE mostraTurmasEspecificas TO 'aluno'@'localhost';
+GRANT EXECUTE ON PROCEDURE contaMatriculas TO 'aluno'@'localhost';
 
