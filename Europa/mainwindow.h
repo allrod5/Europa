@@ -45,6 +45,7 @@ class MainWindow : public QMainWindow
 	private:
 		Ui::MainWindow *ui;
 		Connection connection;
+		int plusCount;
 
 		void drawLogin();
 		void drawInterface();

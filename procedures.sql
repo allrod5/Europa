@@ -301,7 +301,7 @@ begin
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Erro ao inserir horário da turma. Operação revertida.';
 	end;
 	START TRANSACTION;
-		INSERT INTO sala_turma (id_campus, id_turma, dia, hora_inicio, hora_fim, quadrimestre) VALUES (campusTurma(id), id, dia, inicio, fim, curQuadrimestreId());
+		INSERT INTO sala_turma (id_campus, id_turma, dia, hora_inicio, hora_fim) VALUES (campusTurma(id), id, dia, inicio, fim);
     COMMIT;
 end @!!
 

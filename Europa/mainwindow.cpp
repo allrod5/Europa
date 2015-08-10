@@ -921,32 +921,34 @@ void MainWindow::drawSettings(QListWidgetItem *item)
 			field->setValidator(new QIntValidator(1, 500, this));
 			rightConfLayout->addWidget(field);
 
+			plusCount = 0;
+
 			plusLayout = new QHBoxLayout;
 			label = new QLabel("Sala:");
 			field = new QLineEdit;
 			plusLayout->addWidget(label);
 			plusLayout->addWidget(field);
-			field->setObjectName("sala");
+			field->setObjectName("sala"+QString::number(plusCount));
 			plusLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
 
 			label = new QLabel("Dia:");
 			field = new QLineEdit;
 			plusLayout->addWidget(label);
 			plusLayout->addWidget(field);
-			field->setObjectName("dia");
+			field->setObjectName("dia"+QString::number(plusCount));
 			plusLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
 
 			label = new QLabel("Hora de início:");
 			field = new QLineEdit;
 			plusLayout->addWidget(label);
 			plusLayout->addWidget(field);
-			field->setObjectName("inicio");
+			field->setObjectName("inicio"+QString::number(plusCount));
 			plusLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
 
 			label = new QLabel("Hora de fim:");
 			field = new QLineEdit;
 			plusLayout->addWidget(label);
-			field->setObjectName("fim");
+			field->setObjectName("fim"+QString::number(plusCount));
 			plusLayout->addWidget(field);
 
 			middleLayout->addLayout(plusLayout);
@@ -1106,13 +1108,13 @@ void MainWindow::novaTurma()
 		   "'"+conf->findChild<QComboBox*>("disciplina")->currentData().toString()+"'"+
 		   ");");
 
-	/*QLayoutItem *plusLayout;
+	QHBoxLayout *plusLayout;
 	for(int i=0; i<middleLayout->count(); i++) {
-		plusLayout = middleLayout->itemAt(i);
+		//plusLayout = middleLayout->itemAt(i);
 		query.exec("call quadrimestreAtual();");
 		query.first();
 		QString quad = query.value(0).toString();
-		qDebug() << "quad: " << quad;
+
 		query.exec("call idTurma('"+
 				   conf->findChild<QLineEdit*>("nome")->text()+"',"+
 				   conf->findChild<QComboBox*>("campus")->currentData().toString()+","+
@@ -1121,19 +1123,28 @@ void MainWindow::novaTurma()
 				   quad+
 				   ");");
 		query.first();
-		if(!plusLayout->layout()->findChild<QLineEdit*>("dia"))
-			qWarning("wow");
+
+
+		plusLayout = dynamic_cast<QHBoxLayout*>(middleLayout->children()[i]);
 		QString id = query.value(0).toString();
-		qDebug() << "id: " << plusLayout->layout()->children();
+
 		query.exec("call insereHorarioTurma("+
 				   id+","+
-				   "'"+plusLayout->layout()->findChild<QLineEdit*>("dia")->text()+"',"+
-				   plusLayout->layout()->findChild<QLineEdit*>("inicio")->text()+","+
-				   plusLayout->layout()->findChild<QLineEdit*>("fim")->text()+","+
+				   "'"+conf->findChild<QLineEdit*>("dia"+QString::number(i))->text()+"',"+
+				   conf->findChild<QLineEdit*>("inicio"+QString::number(i))->text()+","+
+				   conf->findChild<QLineEdit*>("fim"+QString::number(i))->text()+
 				   ");");
-		qDebug() << query.lastError();
 
-	}*/
+		if(!conf->findChild<QLineEdit*>("sala"+QString::number(i))->text().trimmed().isEmpty())
+			query.exec("call insereSalaTurma("+
+					   id+","+
+					   "'"+conf->findChild<QLineEdit*>("dia"+QString::number(i))->text()+"',"+
+					   conf->findChild<QLineEdit*>("inicio"+QString::number(i))->text()+","+
+					   conf->findChild<QLineEdit*>("fim"+QString::number(i))->text()+","+
+					   "'"+conf->findChild<QLineEdit*>("sala"+QString::number(i))->text().trimmed()+"'"+
+					   ");");
+
+	}
 
 	if(query.lastError().isValid()) {
 		QMessageBox msgBox;
@@ -1190,6 +1201,8 @@ void MainWindow::desalocarProfessor()
 
 void MainWindow::drawPlus()
 {
+	plusCount++;
+
 	QVBoxLayout *middleLayout = ui->centralWidget->findChild<QTabWidget*>("tabWidget")->findChild<QWidget*>("conf")
 			->findChild<QVBoxLayout*>("middleLayout");
 
@@ -1198,27 +1211,27 @@ void MainWindow::drawPlus()
 	QLineEdit *field = new QLineEdit;
 	plusLayout->addWidget(label);
 	plusLayout->addWidget(field);
-	field->setObjectName("sala");
+	field->setObjectName("sala"+QString::number(plusCount));
 	plusLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
 
 	label = new QLabel("Dia:");
 	field = new QLineEdit;
 	plusLayout->addWidget(label);
 	plusLayout->addWidget(field);
-	field->setObjectName("dia");
+	field->setObjectName("dia"+QString::number(plusCount));
 	plusLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
 
 	label = new QLabel("Hora de início:");
 	field = new QLineEdit;
 	plusLayout->addWidget(label);
 	plusLayout->addWidget(field);
-	field->setObjectName("inicio");
+	field->setObjectName("inicio"+QString::number(plusCount));
 	plusLayout->addSpacerItem(new QSpacerItem(10,10,QSizePolicy::Expanding));
 
 	label = new QLabel("Hora de fim:");
 	field = new QLineEdit;
 	plusLayout->addWidget(label);
-	field->setObjectName("fim");
+	field->setObjectName("fim"+QString::number(plusCount));
 	plusLayout->addWidget(field);
 
 	middleLayout->addLayout(plusLayout);
